@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 // Token History Schema
 const tokenHistorySchema = new mongoose.Schema(
   {
-    tokenOwner: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
+    // tokenOwner: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   required: true,
+    //   ref: "User",
+    // },
     tokenValue: {
       type: Number,
       required: true,
@@ -30,14 +30,14 @@ const tokenHistorySchema = new mongoose.Schema(
 // Main Token Schema
 const tokenSchema = new mongoose.Schema(
   {
-    tokenOwner: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
+    // tokenOwner: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User",
+    // },
     tokenValue: {
       type: Number,
       required: true,
+      default: 10,
     },
     tokenHistory: {
       type: [tokenHistorySchema],
@@ -50,7 +50,7 @@ const tokenSchema = new mongoose.Schema(
     },
     expirationDate: {
       type: Date,
-      default: null,
+      default: () => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
     description: {
       type: String,
