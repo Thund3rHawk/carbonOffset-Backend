@@ -127,25 +127,28 @@ export const loginUser = async (req, res) => {
         message: "Could not generate tokens",
       });
     }
-    res
-      .status(200)
-      .send({
-        status: "success",
-        data: user,
-        message: "User logged in successfully",
-      })
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
+
+    // Set cookies before sending the response
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    // Now send the response
+    return res.status(201).send({
+      status: 201,
+      data: user,
+      message: "User logged in successfully",
+    });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       status: 500,
       message: error.message,
     });
@@ -156,6 +159,8 @@ export const refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.cookies;
 
+    console.log("refreshToken: ", refreshToken);
+
     if (!refreshToken) {
       return res.status(400).send({
         status: 400,
@@ -164,6 +169,8 @@ export const refreshToken = async (req, res) => {
     }
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    console.log("decoded: ", decoded);
 
     const user = await User.findById(decoded._id);
 
@@ -191,22 +198,23 @@ export const refreshToken = async (req, res) => {
       });
     }
 
-    res
-      .status(200)
-      .send({
-        status: "success",
-        message: "Token refreshed successfully",
-      })
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      })
-      .cookie("refreshToken", newRefreshToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    return res.status(201).send({
+      status: 201,
+      data: user,
+      message: "Token refreshed successfully",
+    });
   } catch (error) {
     res.status(500).send({
       status: 500,
@@ -216,6 +224,23 @@ export const refreshToken = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
+  try {
+    const user = req.user;
+
+    return res.status(201).send({
+      status: 201,
+      data: user,
+      message: "User retrieved successfully",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      status: 500,
+      message: error.message,
+    });
+  }
+};
+
+export const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
 
