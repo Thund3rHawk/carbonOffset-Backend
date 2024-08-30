@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import addProject from "./routes/addProject.routes.js";
 import createCheckoutSession from "./routes/createCheckoutSession.routes.js";
 import token from "./routes/token.routes.js";
+import user from "./routes/user.routes.js";
 
 dotenv.config();
 
@@ -19,5 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/add-project", addProject);
 app.use("/create-checkout-session", createCheckoutSession);
 app.use("/token", token);
+app.use("/user", user);
 
 export default app;
