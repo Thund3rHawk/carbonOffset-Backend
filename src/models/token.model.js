@@ -1,25 +1,10 @@
 import mongoose from "mongoose";
 
-// Token History Schema
-const tokenHistorySchema = new mongoose.Schema(
+const tokenPriceHistorySchema = new mongoose.Schema(
   {
-    // tokenOwner: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   required: true,
-    //   ref: "User",
-    // },
-    tokenValue: {
+    tokenPrice: {
       type: Number,
       required: true,
-    },
-    description: {
-      type: String,
-      default: "Transaction",
-    },
-    status: {
-      type: String,
-      enum: ["active", "inActive"],
-      default: "active",
     },
   },
   {
@@ -27,37 +12,42 @@ const tokenHistorySchema = new mongoose.Schema(
   }
 );
 
-// Main Token Schema
-const tokenSchema = new mongoose.Schema(
+const tokenVolumeHistorySchema = new mongoose.Schema(
   {
-    // tokenOwner: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User",
-    // },
-    tokenValue: {
+    tokenPrice: {
+      type: Number,
+    },
+    tokenVolume: {
       type: Number,
       required: true,
-      default: 10,
-    },
-    tokenHistory: {
-      type: [tokenHistorySchema],
-      default: [],
-    },
-    status: {
-      type: String,
-      enum: ["active", "inActive"],
-      default: "active",
-    },
-    expirationDate: {
-      type: Date,
-      default: () => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-    },
-    description: {
-      type: String,
-      default: "Token management for user",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
+);
+
+const tokenSchema = new mongoose.Schema(
+  {
+    tokenPrice: {
+      type: Number,
+      required: true,
+    },
+    tokenVolume: {
+      type: Number,
+      required: true,
+    },
+    tokenPriceHistory: {
+      type: [tokenPriceHistorySchema],
+    },
+    tokenVolumeHistory: {
+      type: [tokenVolumeHistorySchema],
+      default: [],
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 const Token = mongoose.model("Token", tokenSchema);

@@ -1,48 +1,157 @@
-import Token from "../models/token.model";
+import Token from "../models/token.model.js";
 
-export const generateToken = async (req, res) => {
+export const createToken = async (req, res) => {
   try {
-    const { tokenValue } = req.body;
-    const newToken = await Token.create({
-      tokenValue: tokenValue ? tokenValue : 10,
+    const token = await Token.create({
+      tokenPrice: req.body.tokenPrice,
+      tokenVolume: 0,
+      tokenPriceHistory: [
+        {
+          tokenPrice: req.body.tokenPrice,
+        },
+      ],
+    });
+
+    res.status(201).send({
+      status: "success",
+      data: token,
+      message: "Token created successfully",
+    });
+  } catch (err) {
+    res.status(500).send({
+      status: 500,
+      message: err.message,
+    });
+  }
+};
+
+export const updateTokenValue = async (req, res) => {
+  try {
+    const token = await Token.findById(req.params.tokenId);
+
+    if (!token) {
+      return res.status(404).send({
+        status: 400,
+        message: "Invalid Token ID",
+      });
+    }
+
+    token.tokenPrice = req.body.tokenPrice;
+    token.tokenPriceHistory.push({
+      tokenPrice: token.tokenPrice,
+    });
+
+    token.markModified("tokenHistory");
+    await token.save();
+
+    res.status(200).send({
+      status: "success",
+      data: token,
+      message: "Token updated successfully",
+    });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+export const updateTokenVolume = async (req, res) => {
+  try {
+    const token = await Token.findById(req.params.tokenId);
+
+    if (!token) {
+      return res.status(404).send({
+        status: 400,
+        message: "Invalid Token ID",
+      });
+    }
+
+    token.tokenVolume += req.body.tokenVolume;
+
+    token.tokenVolumeHistory.push({
+      tokenPrice: token.tokenPrice,
+      tokenVolume: token.tokenVolume,
+    });
+
+    token.markModified("tokenHistory");
+
+    await token.save();
+
+    res.status(200).send({
+      status: "success",
+      data: token,
+      message: "Token volume updated successfully",
+    });
+  } catch (error) {}
+};
+
+export const getToken = async (req, res) => {
+  try {
+    const token = await Token.findById(req.params.tokenId);
+
+    if (!token) {
+      return res.status(404).send({
+        status: 400,
+        message: "Invalid Token ID",
+      });
+    }
+
+    res.status(200).send({
+      status: "success",
+      data: token,
+      message: "Token retrieved successfully",
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send(err);
   }
 };
 
-export const getTokens = async (req, res) => {
+export const shrinkTokenVolume = async (req, res) => {
   try {
-    const tokens = await Token.aggregate([
-      {
-        $match: {
-          status: "active",
-        },
-      },
-    ]);
-    res.status(200).json(tokens);
+    const token = await Token.findById(req.params.tokenId);
+
+    if (!token) {
+      return res.status(404).send({
+        status: 400,
+        message: "Invalid Token ID",
+      });
+    }
+
+    if (token.tokenVolume < req.body.tokenVolume) {
+      token.tokenVolume = 0;
+
+      token.tokenVolumeHistory.push({
+        tokenPrice: token.tokenPrice,
+        tokenVolume: token.tokenVolume,
+      });
+
+      token.markModified("tokenHistory");
+
+      await token.save();
+
+      return res.status(200).send({
+        status: "success",
+        data: token,
+        message: "Token volume updated successfully",
+      });
+    }
+
+    token.tokenVolume -= req.body.tokenVolume;
+
+    token.tokenHistory.push({
+      tokenPrice: token.tokenPrice,
+      tokenVolume: token.tokenVolume,
+    });
+
+    token.markModified("tokenHistory");
+
+    await token.save();
+
+    res.status(200).send({
+      status: "success",
+      data: token,
+      message: "Token volume updated successfully",
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send(err);
   }
 };
-
-// export const getTokenByUserId = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     const tokens = await Token.aggregate([
-//       {
-//         $match: {
-//           tokenOwner: userId,
-//         },
-//       },
-//     ]);
-
-//     res.status(200).json(tokens);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-export const updateToken = async (req, res) => {};
-
-export const redeemToken = async (req, res) => {};
