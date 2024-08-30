@@ -159,8 +159,6 @@ export const refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.cookies;
 
-    console.log("refreshToken: ", refreshToken);
-
     if (!refreshToken) {
       return res.status(400).send({
         status: 400,
