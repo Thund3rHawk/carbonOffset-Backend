@@ -98,11 +98,11 @@ export const getDashboard = async (req, res) => {
     console.log({
       totalUsers: totalUsers[0].userCount,
       totalProjects: totalProjects[0].projectCount,
-      allProjects: allProjects,
       percentageUserIncrease: percentageUserIncrease.percentageIncrease,
       userCountPerMonth: percentageUserIncrease.countByMonth,
       projectCountPerMonth: projectDataByMonth.percentageIncrease,
       projectDataByMonth: projectDataByMonth.countByMonth,
+      time: new Date.now(),
     });
 
     return res.status(200).json({
