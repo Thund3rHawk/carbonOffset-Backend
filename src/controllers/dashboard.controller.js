@@ -102,7 +102,7 @@ export const getDashboard = async (req, res) => {
       userCountPerMonth: percentageUserIncrease.countByMonth,
       projectCountPerMonth: projectDataByMonth.percentageIncrease,
       projectDataByMonth: projectDataByMonth.countByMonth,
-      time: new Date.now(),
+      time: Date.now(),
     });
 
     return res.status(200).json({
