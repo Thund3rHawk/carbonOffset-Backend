@@ -1,44 +1,34 @@
 import projectModel from "../models/project.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { getDataUri } from "../utils/feature.js";
 import { v2 as cloudinary } from "cloudinary";
-import crypto from "crypto";
 
 // Create a new project
 export const createProject = async (req, res) => {
-  // console.log(req.body);
-  // console.log(req.file);
+  // console.log(req);
+  console.log(req.file.path);
   try {
-    let userImg = {};
+    const imageLocalPath = req.file.path;
 
-    if (req.file) {
-      try {
-        const timestamp = Math.round(new Date().getTime() / 1000);
-        const stringToSign = `timestamp=${timestamp}`;
-        const signature = crypto
-          .createHash("sha1")
-          .update(stringToSign + process.env.CLOUDINARY_API_SECRET)
-          .digest("hex");
+    const userImg = await uploadOnCloudinary(imageLocalPath);
 
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          timestamp: timestamp,
-          api_key: process.env.CLOUDINARY_API_KEY,
-          signature: signature,
-        });
-        userImg.public_id = result.public_id;
-        userImg.secure_url = result.secure_url;
-      } catch (error) {
-        console.error("Cloudinary upload failed:", error);
-        // Handle the error, possibly returning a response indicating failure
-      }
+    const { name, location, userCount, details } = req.body;
+
+    if ([name, location, details].includes(undefined)) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const project = await projectModel.create({
-      name: req.body.name,
-      location: req.body.location,
-      userCount: req.body.userCount,
-      details: req.body.details,
-      image: userImg,
+      name,
+      location,
+      userCount,
+      details,
+      image: userImg.url,
     });
+
+    if (!project) {
+      return res.status(400).json({ message: "Project not created" });
+    }
 
     res.status(201).json(project);
   } catch (error) {
