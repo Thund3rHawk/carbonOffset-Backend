@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
+import sendOtp from "../helpers/sendMail.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -129,22 +130,24 @@ export const loginUser = async (req, res) => {
     }
 
     // Set cookies before sending the response
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    // res.cookie("accessToken", accessToken, {
+    //   httpOnly: true,
+    //   sameSite: "none",
+    //   secure: true,
+    // });
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    // res.cookie("refreshToken", refreshToken, {
+    //   httpOnly: true,
+    //   sameSite: "none",
+    //   secure: true,
+    // });
 
     // Now send the response
     return res.status(201).send({
       status: 201,
       data: user,
+      accessToken,
+      refreshToken,
       message: "User logged in successfully",
     });
   } catch (error) {
@@ -377,4 +380,11 @@ export const deleteUser = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const send = sendOtp();
+    res.send(send);
+  } catch (error) {}
 };

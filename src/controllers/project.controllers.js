@@ -6,7 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 // Create a new project
 export const createProject = async (req, res) => {
   // console.log(req);
-  console.log(req.file.path);
+  // console.log(req.file.path);
   try {
     const imageLocalPath = req.file.path;
 
