@@ -6,8 +6,6 @@ import createCheckoutSession from "./routes/createCheckoutSession.routes.js";
 import dashBoard from "./routes/dashboard.routes.js";
 import token from "./routes/token.routes.js";
 import user from "./routes/user.routes.js";
-import cookieParser from "cookie-parser";
-import cors from "cors";
 
 dotenv.config();
 
@@ -16,16 +14,8 @@ const app = express();
 // Connect to the database
 connectDB();
 
-app.use(
-  cors({
-    origin: "http://localhost:5173/",
-    credentials: true,
-  })
-);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // Use the imported routes
 app.use("/api/add-project", addProject);

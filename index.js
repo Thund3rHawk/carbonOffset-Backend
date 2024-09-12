@@ -7,6 +7,13 @@ const PORT = process.env.PORT || 5000;
 
 const server = express();
 
+server.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 // Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -14,22 +21,23 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// const allowedOrigins = ["http://localhost:5173"];
-
-server.use(cors());
-
-server.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
+// Middleware for parsing JSON and URL-encoded form data
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
+// Mount the app routes
 server.use("/", app);
 
+// Global error handling middleware
+server.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send({
+    message: "An internal server error occurred",
+    error: err.message,
+  });
+});
+
+// Start the server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
