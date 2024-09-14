@@ -5,17 +5,17 @@ export const transporter = nodemailer.createTransport({
   port: 25,
   secure: false,
   auth: {
-    user : process.env.MAIL_ADDRESS,
-    pass: process.env.MICROSOFT365_APP_PASSWORD
+    user: process.env.MAIL_ADDRESS,
+    pass: process.env.MICROSOFT365_APP_PASSWORD,
   },
-  // debug: true,
-  // logger: true
+  debug: true,
+  logger: true,
 });
 
 async function sendOtp() {
   const mailOptions = {
     from: process.env.MAIL_ADDRESS, //Sender mail
-    to: "sp0601722@gmail.com", // Reciever Mail
+    to: "goperohan041@gmail.com", // Reciever Mail
     subject: "Hello ✔", // Subject line
     text: "Hello world?", // plain text body
     html: "<b>Hello world?</b>", // Mail body
@@ -31,6 +31,5 @@ async function sendOtp() {
 }
 
 sendOtp().catch(console.error);
-
 
 export default sendOtp;
