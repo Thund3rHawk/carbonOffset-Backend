@@ -13,21 +13,26 @@ export const transporter = nodemailer.createTransport({
 });
 
 async function sendOtp() {
-  const mailOptions = {
-    from: process.env.MAIL_ADDRESS, //Sender mail
-    to: "goperohan041@gmail.com", // Reciever Mail
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // Mail body
-  };
+  try {
+    const mailOptions = {
+      from: process.env.MAIL_ADDRESS, //Sender mail
+      to: "goperohan041@gmail.com", // Reciever Mail
+      subject: "Hello ✔", // Subject line
+      text: "Hello world?", // plain text body
+      html: "<b>Hello world?</b>", // Mail body
+    };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
-    }
-  });
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 sendOtp().catch(console.error);
