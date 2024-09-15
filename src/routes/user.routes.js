@@ -18,7 +18,7 @@ const router = Router();
 router.post("/create-user", createUser);
 router.post("/login", loginUser);
 router.get("/refresh-token", refreshToken);
-router.get("/get-user", getUser);
+router.get("/get-user", verifyJWT, getUser);
 router.get("/:id", getUserById);
 router.get("/get-all-users", getAllUsers);
 router.post("/logout", logOut);

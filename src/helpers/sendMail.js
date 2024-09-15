@@ -16,6 +16,39 @@ async function getToken() {
         scopes: ["https://graph.microsoft.com/.default"]
     });
     return result.accessToken;
+export const transporter = nodemailer.createTransport({
+  host: "smtp.office365.com",
+  port: 25,
+  secure: false,
+  auth: {
+    user: process.env.MAIL_ADDRESS,
+    pass: process.env.MICROSOFT365_APP_PASSWORD,
+  },
+  debug: true,
+  logger: true,
+});
+
+async function sendOtp() {
+  try {
+    const mailOptions = {
+      from: process.env.MAIL_ADDRESS, //Sender mail
+      to: "goperohan041@gmail.com", // Reciever Mail
+      subject: "Hello ✔", // Subject line
+      text: "Hello world?", // plain text body
+      html: "<b>Hello world?</b>", // Mail body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 async function sendEmail(accessToken, subject, body, toRecipients) {
@@ -31,6 +64,7 @@ async function sendEmail(accessToken, subject, body, toRecipients) {
         },
         saveToSentItems: true
     };
+
 
     try {
         const response = await axios.post(url, email, {
@@ -62,3 +96,5 @@ export default async function sendOtp(email) {
         // throw error;
     }
 }
+
+export default sendOtp;
